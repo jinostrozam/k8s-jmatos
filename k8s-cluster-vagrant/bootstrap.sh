@@ -16,7 +16,6 @@ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/dock
 sudo yum install -y -q docker-ce docker-ce-cli containerd.io > /dev/null 2>&1  
 sudo systemctl enable docker  
 sudo systemctl start docker  
-sudo docker run hello-world
 
 # Enable docker service
 echo "[TASK 3] Enable and start docker service"
