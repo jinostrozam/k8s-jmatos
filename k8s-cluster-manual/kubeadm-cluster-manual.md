@@ -10,9 +10,9 @@ This documentation guides you in setting up a cluster with one master node and o
 |Worker|kworker.example.com|172.42.42.101|CentOS 7|1G|1|
 
 ## Checking Hosts
-cat /etc/redhat-release
-free -m
-nproc
+cat /etc/redhat-release  
+free -m  
+nproc  
 
 
 ## On both Kmaster and Kworker
