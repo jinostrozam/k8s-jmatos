@@ -1,0 +1,96 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
+
+Vagrant.configure("2") do |config|
+
+  #config.vm.box = "generic/jessie64"
+  config.vm.box_check_update = true
+    
+  config.vm.provider "libvirt" do |kvm|
+    kvm.random :model => 'random'
+    kvm.cpu_mode = 'host-passthrough'
+    kvm.driver = 'kvm'
+    kvm.memory  = 4096
+    kvm.cpus    = 2
+  end   
+  
+  # config.ssh.forward_agent = true
+
+  # Kubernetes Master Server
+
+  config.vm.define "kmaster" do |kmaster|
+    kmaster.vm.box = "centos/7"
+    kmaster.vm.hostname = "kmaster.example.com"
+    kmaster.vm.network "private_network",
+      ip: '172.42.42.100',
+      libvirt_netmask: '255.255.255.0',
+      libvirt__network_name: 'vagrant-kubernetes',
+      autostart: true,
+      libvirt__forward_mode: 'route',
+      libvirt__dhcp_enabled: false 
+  end
+      #kmaster.vm.provision :hosts do |provisioner|
+      #  provisioner.autoconfigure = false
+      #  provisioner.add_host '127.0.0.1', ['kmaster.example.local', 'kmaster']
+      #end
+      
+      #kmaster.vm.provision :shell, inline: "echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf"
+      #lfcs1.vm.provision :shell, inline: "echo -e 'Package: *\nPin: release a=stretch-backports\nPin-Priority: 500' > /etc/apt/preferences"
+      #lfcs1.vm.provision :shell, inline: 'apt-get update && apt-get -y install apt-transport-https zsh git curl vim tree'
+      #linuxfoundation.vm.provision :shell, inline: 'apt-get update && apt-get -y install apt-transport-https zsh git curl && apt-get -y dist-upgrade'
+
+      #lfcs1.vm.synced_folder './shared/', '/shared', nfs: true, nfs_version: 3, nfs_udp: true
+  
+      #linuxfoundation.vm.provision :shell, :path   => "shell/defaults.sh"
+      #linuxfoundation.vm.provision :shell, :inline => "/usr/bin/puppet apply --modulepath=/opt/autentia-web-repo-jaime/puppet/modules --disable_warnings deprecations /opt/autentia-web-repo-jaime/puppet/manifests/init.pp"
+  ##end
+
+  NodeCount = 2
+
+  # Kubernetes Worker Nodes
+
+  (1..NodeCount).each do |i|
+    config.vm.define "kworker#{i}" do |workernode|
+      workernode.vm.box "centos/7"
+      workernode.vm.hostname = "kworker#{i}.example.com"
+      workernode.vm.network "private_network", ip: "172.42.42.10#{i}",
+        libvirt_netmask: '255.255.255.0',
+        libvirt__network_name: 'vagrant-kubernetes',
+        autostart: true,
+        libvirt__forward_mode: 'route',
+        libvirt__dhcp_enabled: false
+      worker.vm.provider "libvirt" do |v|
+        v.name = "kworker#{i}"
+        v.random :model => 'random'
+        v.cpu_mode = 'host-passthrough'
+        v.driver = 'kvm'
+        v.memory  = 4096
+        v.cpus    = 2
+      end   
+      
+      #kworker.vm.provision :hosts do |provisioner2|
+      #  provisioner2.autoconfigure = false
+      #  provisioner2.add_host '127.0.0.1', ['kworker.example.local', 'kworker']
+      #end
+          
+      #kworker.vm.provision :shell, inline: "echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf"
+      #lfcs2.vm.provision :shell, inline: "echo -e 'deb http://ftp.cl.debian.org/debian stretch main non-free contrib\n\ndeb http://ftp.cl.debian.org/debian-security/ stretch/updates main contrib non-free\n\ndeb http://deb.debian.org/debian stretch-backports main contrib non-free' > /etc/apt/sources.list"
+      #lfcs2.vm.provision :shell, inline: "echo -e 'Package: *\nPin: release a=stretch-backports\nPin-Priority: 500' > /etc/apt/preferences"
+      #lfcs2.vm.provision :shell, inline: 'apt-get update && apt-get -y install apt-transport-https zsh git curl vim tree'
+      #linuxfoundation-client.vm.provision :shell, inline: 'apt-get update && apt-get -y install apt-transport-https zsh git curl && apt-get -y dist-upgrade'
+    
+          
+      #lfcs2.vm.synced_folder './shared/', '/shared', nfs: true, nfs_version: 3, nfs_udp: true
+      
+      #linuxfoundation.vm.provision :shell, :path   => "shell/defaults.sh"
+      #linuxfoundation.vm.provision :shell, :inline => "/usr/bin/puppet apply --modulepath=/opt/autentia-web-repo-jaime/puppet/modules --disable_warnings deprecations /opt/autentia-web-repo-jaime/puppet/manifests/init.pp"
+    
+    end
+  end  
+end
+
+#### add user jaime for management purpose
+### adduser jaime
+### usermod -aG sudo jaime

@@ -28,9 +28,9 @@ Vagrant.configure("2") do |config|
     
     kmaster.vm.provision "shell", :inline => <<-SHELL
       sudo echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf
-      sudo echo "172.42.42.100 kmaster.example.com" | sudo tee -a /etc/hosts
-      sudo echo "172.42.42.101 kworker1.example.com" | sudo tee -a /etc/hosts
-      sudo echo "172.42.42.102 kworker2.example.com" | sudo tee -a /etc/hosts
+      sudo echo "172.42.42.100 kmaster.example.com kmaster" | sudo tee -a /etc/hosts
+      sudo echo "172.42.42.101 kworker1.example.com kworker1" | sudo tee -a /etc/hosts
+      sudo echo "172.42.42.102 kworker2.example.com kworker2" | sudo tee -a /etc/hosts
     SHELL
     
     kmaster.vm.provider "libvirt" do |v|
@@ -58,9 +58,9 @@ Vagrant.configure("2") do |config|
       
       workernode.vm.provision "shell", :inline => <<-SHELL
         sudo echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf
-        sudo echo "172.42.42.100 kmaster.example.com" | sudo tee -a /etc/hosts
-        sudo echo "172.42.42.101 kworker1.example.com" | sudo tee -a /etc/hosts
-        sudo echo "172.42.42.102 kworker2.example.com" | sudo tee -a /etc/hosts
+        sudo echo "172.42.42.100 kmaster.example.com kmaster" | sudo tee -a /etc/hosts
+        sudo echo "172.42.42.101 kworker1.example.com kworker1" | sudo tee -a /etc/hosts
+        sudo echo "172.42.42.102 kworker2.example.com kworker2" | sudo tee -a /etc/hosts
       SHELL
 
       workernode.vm.provider "libvirt" do |v|
