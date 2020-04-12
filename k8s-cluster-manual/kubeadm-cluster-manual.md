@@ -9,6 +9,12 @@ This documentation guides you in setting up a cluster with one master node and o
 |Master|kmaster.example.com|172.42.42.100|CentOS 7|2G|2|
 |Worker|kworker.example.com|172.42.42.101|CentOS 7|1G|1|
 
+## Checking Hosts
+cat /etc/redhat-release
+free -m
+nproc
+
+
 ## On both Kmaster and Kworker
 Perform all the commands as root user unless otherwise specified
 ### Pre-requisites
