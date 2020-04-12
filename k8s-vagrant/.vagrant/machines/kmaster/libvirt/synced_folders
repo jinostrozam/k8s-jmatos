@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/home/jaime/workspace/kubernetes/justmeandtheopensource/k8s-vagrant","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
