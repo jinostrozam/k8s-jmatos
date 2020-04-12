@@ -49,31 +49,31 @@ sudo docker run hello-world
 ```
 ##### Disable SELinux
 ```
-setenforce 0
-sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
+sudo setenforce 0
+sudo sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
 ```
 ##### Disable Firewall
 ```
-systemctl disable firewalld
-systemctl stop firewalld
+sudo systemctl disable firewalld
+sudo systemctl stop firewalld
 ```
 ##### Disable swap
 ```
-sed -i '/swap/d' /etc/fstab
-swapoff -a
+sudo sed -i '/swap/d' /etc/fstab
+sudo swapoff -a
 ```
 ##### Update sysctl settings for Kubernetes networking
 ```
-cat >>/etc/sysctl.d/kubernetes.conf<<EOF
+sudo bash -c 'cat >>/etc/sysctl.d/kubernetes.conf<<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
-EOF
-sysctl --system
+EOF'
+sudo sysctl --system
 ```
 ### Kubernetes Setup
 ##### Add yum repository
 ```
-cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
+sudo bash -c 'cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -82,30 +82,34 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
         https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF
+EOF'
 ```
 ##### Install Kubernetes
 ```
-yum install -y kubeadm kubelet kubectl
+sudo yum install -y kubeadm kubelet kubectl
 ```
 ##### Enable and Start kubelet service
 ```
-systemctl enable kubelet
-systemctl start kubelet
+sudo systemctl enable kubelet
+sudo systemctl start kubelet
 ```
 ## On kmaster
 ##### Initialize Kubernetes Cluster
 ```
-kubeadm init --apiserver-advertise-address=172.42.42.100 --pod-network-cidr=192.168.0.0/16
+sudo kubeadm init --apiserver-advertise-address=172.42.42.100 --pod-network-cidr=192.168.0.0/16  
+
+copy line 'kubeadm join ...' or run the following command to output the command again:  
+
+
 ```
 ##### Copy kube config
 To be able to use kubectl command to connect and interact with the cluster, the user needs kube config file.
 
 In my case, the user account is venkatn
 ```
-mkdir /home/venkatn/.kube
-cp /etc/kubernetes/admin.conf /home/venkatn/.kube/config
-chown -R venkatn:venkatn /home/venkatn/.kube
+sudo mkdir /home/vagrant/.kube
+sudo cp /etc/kubernetes/admin.conf /home/venkatn/.kube/config
+sudo chown -R venkatn:venkatn /home/venkatn/.kube
 ```
 ##### Deploy Calico network
 This has to be done as the user in the above step (in my case it is __venkatn__)
@@ -119,16 +123,19 @@ kubeadm token create --print-join-command
 ```
 ## On Kworker
 ##### Join the cluster
-Use the output from __kubeadm token create__ command in previous step from the master server and run here.
+Use the output from __kubeadm token create__ command in previous step from the master server and run here with sudo.
 
 ## Verifying the cluster
 ##### Get Nodes status
 ```
-kubectl get nodes
+kubectl get nodes  
+kubectl get nodes -o wide
 ```
 ##### Get component status
 ```
 kubectl get cs
+kubectl cluster-info  
+kubectl version --short  
 ```
 
 Have Fun!!
