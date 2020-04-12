@@ -9,12 +9,6 @@ This documentation guides you in setting up a cluster with one master node and o
 |Master|kmaster.example.com|172.42.42.100|CentOS 7|2G|2|
 |Worker|kworker.example.com|172.42.42.101|CentOS 7|1G|1|
 
-## Checking Hosts
-cat /etc/redhat-release  
-free -m  
-nproc  
-
-
 ## On both Kmaster and Kworker
 Perform all the commands as root user unless otherwise specified
 ### Pre-requisites
@@ -36,44 +30,34 @@ yum install -y -q docker-ce >/dev/null 2>&1
 
 systemctl enable docker
 systemctl start docker
-
---
-sudo yum update -y  
-sudo yum install -y -q yum-utils device-mapper-persistent-data lvm2 > /dev/null 2>&1  
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo > /dev/null 2>&1  
-sudo yum install -y -q docker-ce docker-ce-cli containerd.io > /dev/null 2>&1  
-sudo systemctl enable docker  
-sudo systemctl start docker  
-sudo docker run hello-world  
-
 ```
 ##### Disable SELinux
 ```
-sudo setenforce 0
-sudo sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
+setenforce 0
+sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
 ```
 ##### Disable Firewall
 ```
-sudo systemctl disable firewalld
-sudo systemctl stop firewalld
+systemctl disable firewalld
+systemctl stop firewalld
 ```
 ##### Disable swap
 ```
-sudo sed -i '/swap/d' /etc/fstab
-sudo swapoff -a
+sed -i '/swap/d' /etc/fstab
+swapoff -a
 ```
 ##### Update sysctl settings for Kubernetes networking
 ```
-sudo bash -c 'cat >>/etc/sysctl.d/kubernetes.conf<<EOF
+cat >>/etc/sysctl.d/kubernetes.conf<<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
-EOF'
-sudo sysctl --system
+EOF
+sysctl --system
 ```
 ### Kubernetes Setup
 ##### Add yum repository
 ```
-sudo bash -c 'cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
+cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -82,34 +66,30 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
         https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF'
+EOF
 ```
 ##### Install Kubernetes
 ```
-sudo yum install -y kubeadm kubelet kubectl
+yum install -y kubeadm kubelet kubectl
 ```
 ##### Enable and Start kubelet service
 ```
-sudo systemctl enable kubelet
-sudo systemctl start kubelet
+systemctl enable kubelet
+systemctl start kubelet
 ```
 ## On kmaster
 ##### Initialize Kubernetes Cluster
 ```
-sudo kubeadm init --apiserver-advertise-address=172.42.42.100 --pod-network-cidr=192.168.0.0/16  
-
-copy line 'kubeadm join ...' or run the following command to output the command again:  
-
-
+kubeadm init --apiserver-advertise-address=172.42.42.100 --pod-network-cidr=192.168.0.0/16
 ```
 ##### Copy kube config
 To be able to use kubectl command to connect and interact with the cluster, the user needs kube config file.
 
 In my case, the user account is venkatn
 ```
-sudo mkdir /home/vagrant/.kube
-sudo cp /etc/kubernetes/admin.conf /home/venkatn/.kube/config
-sudo chown -R venkatn:venkatn /home/venkatn/.kube
+mkdir /home/venkatn/.kube
+cp /etc/kubernetes/admin.conf /home/venkatn/.kube/config
+chown -R venkatn:venkatn /home/venkatn/.kube
 ```
 ##### Deploy Calico network
 This has to be done as the user in the above step (in my case it is __venkatn__)
@@ -123,19 +103,16 @@ kubeadm token create --print-join-command
 ```
 ## On Kworker
 ##### Join the cluster
-Use the output from __kubeadm token create__ command in previous step from the master server and run here with sudo.
+Use the output from __kubeadm token create__ command in previous step from the master server and run here.
 
 ## Verifying the cluster
 ##### Get Nodes status
 ```
-kubectl get nodes  
-kubectl get nodes -o wide
+kubectl get nodes
 ```
 ##### Get component status
 ```
 kubectl get cs
-kubectl cluster-info  
-kubectl version --short  
 ```
 
 Have Fun!!
