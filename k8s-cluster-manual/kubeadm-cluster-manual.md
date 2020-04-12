@@ -36,6 +36,16 @@ yum install -y -q docker-ce >/dev/null 2>&1
 
 systemctl enable docker
 systemctl start docker
+
+--
+sudo yum update -y  
+sudo yum install -y -q yum-utils device-mapper-persistent-data lvm2 > /dev/null 2>&1  
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo > /dev/null 2>&1  
+sudo yum install -y -q docker-ce docker-ce-cli containerd.io > /dev/null 2>&1  
+sudo systemctl enable docker  
+sudo systemctl start docker  
+sudo docker run hello-world  
+
 ```
 ##### Disable SELinux
 ```
