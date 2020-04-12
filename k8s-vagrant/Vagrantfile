@@ -24,8 +24,15 @@ Vagrant.configure("2") do |config|
       libvirt__network_name: 'vagrant-kubernetes',
       autostart: true,
       libvirt__forward_mode: 'route',
-      libvirt__dhcp_enabled: false 
-
+      libvirt__dhcp_enabled: false
+    
+    kmaster.vm.provision "shell", :inline => <<-SHELL
+      sudo echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf
+      sudo echo "172.42.42.100 kmaster.example.com" | sudo tee -a /etc/hosts
+      sudo echo "172.42.42.101 kworker1.example.com" | sudo tee -a /etc/hosts
+      sudo echo "172.42.42.102 kworker2.example.com" | sudo tee -a /etc/hosts
+    SHELL
+    
     kmaster.vm.provider "libvirt" do |v|
       v.random :model => 'random'
       v.cpu_mode = 'host-passthrough'
@@ -48,6 +55,13 @@ Vagrant.configure("2") do |config|
         autostart: true,
         libvirt__forward_mode: 'route',
         libvirt__dhcp_enabled: false
+      
+      workernode.vm.provision "shell", :inline => <<-SHELL
+        sudo echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf
+        sudo echo "172.42.42.100 kmaster.example.com" | sudo tee -a /etc/hosts
+        sudo echo "172.42.42.101 kworker1.example.com" | sudo tee -a /etc/hosts
+        sudo echo "172.42.42.102 kworker2.example.com" | sudo tee -a /etc/hosts
+      SHELL
 
       workernode.vm.provider "libvirt" do |v|
         v.random :model => 'random'
