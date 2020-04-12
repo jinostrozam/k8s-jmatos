@@ -45,6 +45,7 @@ sudo yum install -y -q docker-ce docker-ce-cli containerd.io > /dev/null 2>&1
 sudo systemctl enable docker  
 sudo systemctl start docker  
 sudo docker run hello-world  
+sudo usermod -aG docker vagrant
 
 ```
 ##### Disable SELinux
