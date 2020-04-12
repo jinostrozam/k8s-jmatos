@@ -6,6 +6,8 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 Vagrant.configure("2") do |config|
 
   config.vm.box_check_update = true
+
+  config.vm.provision: "shell", path: "bootstrap.sh"
     
   config.vm.provider "libvirt" do |kvm|
     kvm.random :model => 'random'
@@ -33,6 +35,8 @@ Vagrant.configure("2") do |config|
       sudo echo "172.42.42.102 kworker2.example.com kworker2" | sudo tee -a /etc/hosts
     SHELL
     
+    kmaster.vm.provision "shell", path: "bootstrap_kmaster.sh"
+
     kmaster.vm.provider "libvirt" do |v|
       v.random :model => 'random'
       v.cpu_mode = 'host-passthrough'
@@ -62,6 +66,8 @@ Vagrant.configure("2") do |config|
         sudo echo "172.42.42.101 kworker1.example.com kworker1" | sudo tee -a /etc/hosts
         sudo echo "172.42.42.102 kworker2.example.com kworker2" | sudo tee -a /etc/hosts
       SHELL
+
+      workernode.vm.provision "shell", path: "bootstrap_kworker.sh"
 
       workernode.vm.provider "libvirt" do |v|
         v.random :model => 'random'
