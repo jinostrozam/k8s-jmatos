@@ -10,12 +10,13 @@
 
 # Install docker from Docker-ce repository
 echo "[TASK 2] Install docker container engine"
-sudo yum update -y  
+#sudo yum -y update
 sudo yum install -y -q yum-utils device-mapper-persistent-data lvm2 > /dev/null 2>&1  
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo > /dev/null 2>&1  
 sudo yum install -y -q docker-ce docker-ce-cli containerd.io > /dev/null 2>&1  
 sudo systemctl enable docker  
-sudo systemctl start docker  
+sudo systemctl start docker
+sudo usermod -aG docker vagrant  
 
 # Enable docker service
 echo "[TASK 3] Enable and start docker service"

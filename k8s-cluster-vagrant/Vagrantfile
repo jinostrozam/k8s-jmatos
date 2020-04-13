@@ -28,6 +28,8 @@ Vagrant.configure("2") do |config|
       libvirt__forward_mode: 'route',
       libvirt__dhcp_enabled: false
     
+    kmaster.vm.provision "file", source: "kube-flannel.yaml", destination: "kube-flannel.yaml"
+    
     kmaster.vm.provision "shell", :inline => <<-SHELL
       sudo echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf
       sudo echo "172.42.42.100 kmaster.example.com kmaster" | sudo tee -a /etc/hosts
@@ -35,7 +37,7 @@ Vagrant.configure("2") do |config|
       sudo echo "172.42.42.102 kworker2.example.com kworker2" | sudo tee -a /etc/hosts
     SHELL
     
-    kmaster.vm.provision "shell", path: "bootstrap_kmaster.sh"
+    kmaster.vm.provision "shell", path: "bootstrap_kmaster_flannel.sh"
 
     kmaster.vm.provider "libvirt" do |v|
       v.random :model => 'random'

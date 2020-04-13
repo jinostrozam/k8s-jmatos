@@ -13,7 +13,10 @@ chown -R vagrant:vagrant /home/vagrant/.kube
 # Deploy Calico network
 echo "[TASK 3] Deploy Calico network"
 su - vagrant -c "kubectl create -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml"
+#su - vagrant -c "kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml"
+#su - vagrant -c "kubectl apply -f https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml"
+#su - vagrant -c "kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml"
 
 # Generate Cluster join command
 echo "[TASK 4] Generate and save cluster join command to /joincluster.sh"
-kubeadm token create --print-join-command > /joincluster.sh
+#kubeadm token create --print-join-command > /joincluster.sh
